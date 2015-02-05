@@ -2,9 +2,18 @@
 import time
 import sys
 import re
+import urllib
 import urllib2
 import traceback
 import logging
+
+# dnspos 的账号密码, 用于api的访问
+DNSPOD_ACCOUNT = '4199191@qq.com'
+DNSPOD_PASSWORD = ''
+
+# 需要使用 DDNS 服务的域名地址
+DOMAIN = 'chenof.com'
+HOST_NAME = '@'
 
 
 def get_wan_ip():
@@ -35,4 +44,13 @@ def get_wan_ip():
     return ip
 
 
-print get_wan_ip()
+def http_request(url, data):
+    opener = urllib2.Request(url)
+    opener.add_header('User-Agent', 'DDNSByDNSPod/1.0(4199191@qq.com)')
+    response = urllib2.urlopen(opener, urllib.urlencode(data))
+    return response.read()
+
+
+print http_request('https://dnsapi.cn/Domain.Info',
+                   {'format': 'json', 'login_email': DNSPOD_ACCOUNT, 'login_password': DNSPOD_PASSWORD,
+                    'domain': DOMAIN})
