@@ -154,4 +154,10 @@ def main():
         print str(index) + ': ' + sub_domain + record_list['domain']['name'] + ': ' + change_result['status']['message']
 
 
-main()
+while True:
+    try:
+        main()
+    except:
+        pass
+
+    time.sleep(30)
