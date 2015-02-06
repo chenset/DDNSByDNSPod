@@ -5,7 +5,6 @@ import json
 import re
 import urllib
 import urllib2
-import traceback
 import logging
 
 # dnspos 的账号密码, 用于api的访问
@@ -122,11 +121,12 @@ def main():
         logging.info(DOMAIN + ' 无法获取该域名信息')
         return
 
-    if domain_info['status']['code'] == -1:
+    if int(domain_info['status']['code']) == -1:
+        logging.error('可能是账号密码不对, 暂停一段时间, 避免被禁')
         time.sleep(1000)  # 账号密码不对的情况下, 暂停一段时间, 避免被禁
         return
 
-    if not domain_info['status']['code'] == 1:
+    if not int(domain_info['status']['code']) == 1:
         logging.warning(domain_info['status']['message'])
         return
 
@@ -134,7 +134,7 @@ def main():
 
     # 获取域名下的解析记录
     record_list = d.record_list(domain_id)
-    if not record_list['status']['code'] == 1:
+    if not int(record_list['status']['code']) == 1:
         logging.warning(record_list['status']['message'])
         return
 
