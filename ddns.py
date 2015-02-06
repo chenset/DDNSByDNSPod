@@ -16,6 +16,9 @@ DNSPOD_PASSWORD = ''
 DOMAIN = 'chenof.com'
 SUB_DOMAIN_LIST = ['@', 'www']  # 指定需要修改的主机记录
 RECORD_LINE = '默认'  # 记录线路 默认|电信|联通|教育网|百度|搜索引擎 推荐保持默认
+REST_TIME = 30  # 同步频率
+
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s', )
 
 
 def http_request(url, data=()):
@@ -65,7 +68,7 @@ def get_wan_ip():
     return ip
 
 
-class DDNS():
+class DNSPod():
     common_data = {'format': 'json', 'login_email': DNSPOD_ACCOUNT, 'login_password': DNSPOD_PASSWORD, }
 
     def __init__(self):
@@ -109,19 +112,35 @@ class DDNS():
 def main():
     wan_id = get_wan_ip()
     if not wan_id:
+        logging.info('无法获取本地的外网IP')
         return
-
-    d = DDNS()
+    d = DNSPod()
 
     # 获取域名信息
-    domain_id = d.domain_info()['domain']['id']
-    if not domain_id:
+    domain_info = d.domain_info()
+    if not domain_info:
+        logging.info(DOMAIN + ' 无法获取该域名信息')
         return
+
+    if domain_info['status']['code'] == -1:
+        time.sleep(1000)  # 账号密码不对的情况下, 暂停一段时间, 避免被禁
+        return
+
+    if not domain_info['status']['code'] == 1:
+        logging.warning(domain_info['status']['message'])
+        return
+
+    domain_id = domain_info['domain']['id']
 
     # 获取域名下的解析记录
     record_list = d.record_list(domain_id)
+    if not record_list['status']['code'] == 1:
+        logging.warning(record_list['status']['message'])
+        return
+
     records = record_list['records']
     if not records:
+        logging.info(DOMAIN + ' 无法获取该域名下的记录信息')
         return
 
     # 过滤部分record
@@ -149,7 +168,6 @@ def main():
         index += 1
         change_result = d.record_ddns(row['domain_id'], row['record_id'], row['sub_domain'], row['record_line'],
                                       row['value'])
-        # print row['sub_domain']
         sub_domain = '' if row['sub_domain'] == '@' else row['sub_domain'] + '.'
         print str(index) + ': ' + sub_domain + record_list['domain']['name'] + ': ' + change_result['status']['message']
 
@@ -160,4 +178,4 @@ while True:
     except:
         pass
 
-    time.sleep(30)
+    time.sleep(REST_TIME)
