@@ -1,11 +1,9 @@
 # -*- coding:utf-8 -*-
 import time
-import sys
 import json
 import re
 import urllib
 import urllib2
-import traceback
 import logging
 
 # dnspos 的账号密码, 用于api的访问
@@ -114,9 +112,11 @@ def main():
     d = DDNS()
 
     # 获取域名信息
-    domain_id = d.domain_info()['domain']['id']
-    if not domain_id:
+    info_result = d.domain_info()
+
+    if not info_result:
         return
+    domain_id = info_result['domain']['id']
 
     # 获取域名下的解析记录
     record_list = d.record_list(domain_id)
@@ -141,6 +141,7 @@ def main():
              'value': wan_id, })
 
     if not change_records:
+        logging.warning('没有记录需要修改')
         return
 
     # 执行DNS记录修改,实现DDNS
@@ -154,4 +155,6 @@ def main():
         print str(index) + ': ' + sub_domain + record_list['domain']['name'] + ': ' + change_result['status']['message']
 
 
-main()
+while True:
+    main()
+    time.sleep(60)  # 60秒尝试一次
