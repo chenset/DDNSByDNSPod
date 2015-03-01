@@ -17,7 +17,7 @@ SUB_DOMAIN_LIST = ['@', 'www']  # 指定需要修改的主机记录
 RECORD_LINE = '默认'  # 记录线路 默认|电信|联通|教育网|百度|搜索引擎 推荐保持默认
 REST_TIME = 30  # 同步频率
 
-logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s', )
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',filename='/tmp/ddns.log')
 
 
 def http_request(url, data=()):
