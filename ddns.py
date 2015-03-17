@@ -151,6 +151,7 @@ def main():
         if not old_ip:
             continue
         if not row['name'] in SUB_DOMAIN_LIST:
+            logging.info(row['name'] + ' not in ' + str(SUB_DOMAIN_LIST))
             continue
 
         if old_ip == wan_id:  # 如果跟现在的IP相同则过掉
