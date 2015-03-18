@@ -6,6 +6,7 @@ import re
 import urllib
 import urllib2
 import logging
+import traceback
 
 # dnspos 的账号密码, 用于api的访问
 DNSPOD_ACCOUNT = '4199191@qq.com'
@@ -177,7 +178,7 @@ def main():
 while True:
     try:
         main()
-    except Exception as e:
-        logging.error(str(e))
+    except:
+        logging.error(traceback.format_exc())
 
     time.sleep(REST_TIME)
