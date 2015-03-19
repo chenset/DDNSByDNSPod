@@ -145,6 +145,8 @@ def main():
         logging.info(DOMAIN + ' 无法获取该域名下的记录信息')
         return
 
+    logging.info('domain_records: ' + str(records))
+
     # 过滤部分record
     change_records = []
     for row in records:
@@ -165,6 +167,8 @@ def main():
     if not change_records:
         return
 
+    logging.info('change_info: ' + str(change_records))
+
     # 执行DNS记录修改,实现DDNS
     index = 0
     for row in change_records:
@@ -172,7 +176,11 @@ def main():
         change_result = d.record_ddns(row['domain_id'], row['record_id'], row['sub_domain'], row['record_line'],
                                       row['value'])
         sub_domain = '' if row['sub_domain'] == '@' else row['sub_domain'] + '.'
-        print str(index) + ': ' + sub_domain + record_list['domain']['name'] + ': ' + change_result['status']['message']
+        # print str(index) + ': '
+        # + sub_domain + record_list['domain']['name'] + ': ' + change_result['status']['message']
+        logging.info('change_result:' +
+                     str(index) + ': ' + sub_domain + record_list['domain']['name'] + ': ' +
+                     change_result['status']['message'])
 
 
 while True:
