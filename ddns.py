@@ -16,7 +16,7 @@ DNSPOD_PASSWORD = ''
 DOMAIN = 'chenof.com'
 SUB_DOMAIN_LIST = ['@', 'www']  # 指定需要修改的主机记录
 RECORD_LINE = '默认'  # 记录线路 默认|电信|联通|教育网|百度|搜索引擎 推荐保持默认
-REST_TIME = 30  # 同步频率
+REST_TIME = 300  # 同步频率
 
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
                     filename='/tmp/ddns.log')
@@ -134,6 +134,8 @@ def main():
 
     domain_id = domain_info['domain']['id']
 
+    logging.info('domain_info: ' + str(domain_info))
+
     # 获取域名下的解析记录
     record_list = d.record_list(domain_id)
     if not int(record_list['status']['code']) == 1:
@@ -145,7 +147,7 @@ def main():
         logging.info(DOMAIN + ' 无法获取该域名下的记录信息')
         return
 
-    logging.info('domain_records: ' + str(records))
+    logging.info('domain_records: ' + str(record_list))
 
     # 过滤部分record
     change_records = []
@@ -176,8 +178,7 @@ def main():
         change_result = d.record_ddns(row['domain_id'], row['record_id'], row['sub_domain'], row['record_line'],
                                       row['value'])
         sub_domain = '' if row['sub_domain'] == '@' else row['sub_domain'] + '.'
-        # print str(index) + ': '
-        # + sub_domain + record_list['domain']['name'] + ': ' + change_result['status']['message']
+
         logging.info('change_result:' +
                      str(index) + ': ' + sub_domain + record_list['domain']['name'] + ': ' +
                      change_result['status']['message'])
