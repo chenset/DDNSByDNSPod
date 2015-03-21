@@ -1,6 +1,5 @@
 # -*- coding:utf-8 -*-
 import time
-import sys
 import json
 import re
 import urllib
@@ -16,10 +15,9 @@ DNSPOD_PASSWORD = ''
 DOMAIN = 'chenof.com'
 SUB_DOMAIN_LIST = ['@', 'www']  # 指定需要修改的主机记录
 RECORD_LINE = '默认'  # 记录线路 默认|电信|联通|教育网|百度|搜索引擎 推荐保持默认
-REST_TIME = 300  # 同步频率
+REST_TIME = 30  # 同步频率
 
-logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',
-                    filename='/tmp/ddns.log')
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',)
 
 
 def http_request(url, data=()):
@@ -76,7 +74,7 @@ class DNSPod():
         pass
 
     def domain_info(self):
-        post_data = self.common_data
+        post_data = dict(self.common_data)
         post_data['domain'] = DOMAIN
 
         response = http_request('https://dnsapi.cn/Domain.Info', post_data)
@@ -86,7 +84,7 @@ class DNSPod():
         return json.loads(response)
 
     def record_list(self, domain_id):
-        post_data = self.common_data
+        post_data = dict(self.common_data)
         post_data['domain_id'] = domain_id
 
         response = http_request('https://dnsapi.cn/Record.List', post_data)
@@ -96,7 +94,7 @@ class DNSPod():
         return json.loads(response)
 
     def record_ddns(self, domain_id, record_id, sub_domain, record_line, value):
-        post_data = self.common_data
+        post_data = dict(self.common_data)
         post_data['domain_id'] = domain_id
         post_data['record_id'] = record_id
         post_data['sub_domain'] = sub_domain
@@ -134,8 +132,6 @@ def main():
 
     domain_id = domain_info['domain']['id']
 
-    logging.info('domain_info: ' + str(domain_info))
-
     # 获取域名下的解析记录
     record_list = d.record_list(domain_id)
     if not int(record_list['status']['code']) == 1:
@@ -146,8 +142,6 @@ def main():
     if not records:
         logging.info(DOMAIN + ' 无法获取该域名下的记录信息')
         return
-
-    logging.info('domain_records: ' + str(record_list))
 
     # 过滤部分record
     change_records = []
@@ -169,20 +163,20 @@ def main():
     if not change_records:
         return
 
-    logging.info('change_info: ' + str(change_records))
-
     # 执行DNS记录修改,实现DDNS
-    index = 0
+    # index = 0
     for row in change_records:
-        index += 1
-        change_result = d.record_ddns(row['domain_id'], row['record_id'], row['sub_domain'], row['record_line'],
-                                      row['value'])
-        sub_domain = '' if row['sub_domain'] == '@' else row['sub_domain'] + '.'
+        d.record_ddns(row['domain_id'], row['record_id'], row['sub_domain'], row['record_line'], row['value'])
 
-        logging.info('change_result:' +
-                     str(index) + ': ' + sub_domain + record_list['domain']['name'] + ': ' +
-                     change_result['status']['message'])
+        # index += 1
 
+        # change_result = d.record_ddns(row['domain_id'], row['record_id'], row['sub_domain'], row['record_line'],
+        # row['value'])
+        # sub_domain = '' if row['sub_domain'] == '@' else row['sub_domain'] + '.'
+
+        # logging.info('change_result:' +
+        # str(index) + ': ' + sub_domain + record_list['domain']['name'] + ': ' +
+        #              change_result['status']['message'])
 
 while True:
     try:
