@@ -5,6 +5,7 @@ import re
 import urllib
 import urllib2
 import logging
+import ssl
 import traceback
 
 # dnspos 的账号密码, 用于api的访问
@@ -15,7 +16,7 @@ DNSPOD_PASSWORD = ''
 DOMAIN = 'chenof.com'
 SUB_DOMAIN_LIST = ['@', 'www']  # 指定需要修改的主机记录
 RECORD_LINE = '默认'  # 记录线路 默认|电信|联通|教育网|百度|搜索引擎 推荐保持默认
-REST_TIME = 90  # 同步频率
+REST_TIME = 60  # 同步频率
 
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',)
 
@@ -25,7 +26,8 @@ def http_request(url, data=()):
     try:
         opener = urllib2.Request(url)
         opener.add_header('User-Agent', 'DDNSByDNSPod/1.0(4199191@qq.com)')  # DNSPod要求的User-Agent
-        response = urllib2.urlopen(opener, urllib.urlencode(data)).read()
+        context = ssl._create_unverified_context()
+        response = urllib2.urlopen(opener, urllib.urlencode(data), context=context).read()
     except urllib2.HTTPError:
         logging.error(url + '地址无法联通')
     except Exception, e:
