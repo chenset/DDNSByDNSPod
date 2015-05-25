@@ -18,7 +18,7 @@ SUB_DOMAIN_LIST = ['@', 'www']  # 指定需要修改的主机记录
 RECORD_LINE = '默认'  # 记录线路 默认|电信|联通|教育网|百度|搜索引擎 推荐保持默认
 REST_TIME = 60  # 同步频率
 
-logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s',)
+logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(filename)s[line:%(lineno)d] %(levelname)s %(message)s', )
 
 
 def http_request(url, data=()):
@@ -47,10 +47,11 @@ def fetch_ip(content):
 
 def get_wan_ip():
     server_list = (  # 获取wan ip的网站地址, 可以自己添加更多
+                     'http://wanip.sinaapp.com/',
                      'http://1111.ip138.com/ic.asp',
                      'http://city.ip138.com/ip2city.asp',
                      'http://www.ip38.com/',
-    )
+                     )
 
     ip = None
     for server in server_list:
@@ -70,13 +71,12 @@ def get_wan_ip():
 
 
 class DNSPod():
-    common_data = {'format': 'json', 'login_email': DNSPOD_ACCOUNT, 'login_password': DNSPOD_PASSWORD, }
-
     def __init__(self):
+        self.common_data = {'format': 'json', 'login_email': DNSPOD_ACCOUNT, 'login_password': DNSPOD_PASSWORD, }
         pass
 
     def domain_info(self):
-        post_data = dict(self.common_data)
+        post_data = self.common_data
         post_data['domain'] = DOMAIN
 
         response = http_request('https://dnsapi.cn/Domain.Info', post_data)
@@ -86,7 +86,7 @@ class DNSPod():
         return json.loads(response)
 
     def record_list(self, domain_id):
-        post_data = dict(self.common_data)
+        post_data = self.common_data
         post_data['domain_id'] = domain_id
 
         response = http_request('https://dnsapi.cn/Record.List', post_data)
@@ -96,7 +96,7 @@ class DNSPod():
         return json.loads(response)
 
     def record_ddns(self, domain_id, record_id, sub_domain, record_line, value):
-        post_data = dict(self.common_data)
+        post_data = self.common_data
         post_data['domain_id'] = domain_id
         post_data['record_id'] = record_id
         post_data['sub_domain'] = sub_domain
@@ -169,6 +169,7 @@ def main():
     # index = 0
     for row in change_records:
         d.record_ddns(row['domain_id'], row['record_id'], row['sub_domain'], row['record_line'], row['value'])
+
 
 while True:
     try:
