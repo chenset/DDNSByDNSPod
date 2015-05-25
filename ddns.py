@@ -51,7 +51,6 @@ def fetch_ip(content):
 
 def get_wan_ip():
     server_list = (  # 获取wan ip的网站地址, 可以自己添加更多
-                     'http://wanip.sinaapp.com/',
                      'http://1111.ip138.com/ic.asp',
                      'http://city.ip138.com/ip2city.asp',
                      'http://www.ip38.com/',
