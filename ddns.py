@@ -26,7 +26,9 @@ def http_request(url, data=()):
     try:
         opener = urllib2.Request(url)
         opener.add_header('User-Agent', 'DDNSByDNSPod/1.0(4199191@qq.com)')  # DNSPod要求的User-Agent
-        context = ssl._create_unverified_context()
+        context = None
+        if '_create_unverified_context' in dir(ssl):
+            context = ssl._create_unverified_context()
         response = urllib2.urlopen(opener, urllib.urlencode(data), context=context).read()
     except urllib2.HTTPError:
         logging.error(url + '地址无法联通')
