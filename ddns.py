@@ -11,11 +11,11 @@ import traceback
 
 # dnspos 的账号密码, 用于api的访问
 DNSPOD_ACCOUNT = '4199191@qq.com'
-DNSPOD_PASSWORD = ''
+DNSPOD_PASSWORD = '4199191'
 
 # 需要使用 DDNS 服务的域名地址
 DOMAIN = 'chenof.com'
-SUB_DOMAIN_LIST = ['@', 'www']  # 指定需要修改的主机记录
+SUB_DOMAIN_LIST = ['@', 'www','*']  # 指定需要修改的主机记录
 RECORD_LINE = '默认'  # 记录线路 默认|电信|联通|教育网|百度|搜索引擎 推荐保持默认
 REST_TIME = 60  # 同步频率
 
