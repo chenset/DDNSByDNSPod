@@ -11,7 +11,7 @@ import traceback
 
 # dnspos 的账号密码, 用于api的访问
 DNSPOD_ACCOUNT = '4199191@qq.com'
-DNSPOD_PASSWORD = '4199191'
+DNSPOD_PASSWORD = ''
 
 # 需要使用 DDNS 服务的域名地址
 DOMAIN = 'chenof.com'
