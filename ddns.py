@@ -174,10 +174,11 @@ def main():
         d.record_ddns(row['domain_id'], row['record_id'], row['sub_domain'], row['record_line'], row['value'])
 
 
-while True:
-    try:
-        main()
-    except:
-        logging.error(traceback.format_exc())
-
-    time.sleep(REST_TIME)
+main()  # 使用Crond计划任务替换常驻内存的执行方式.
+# while True:
+#     try:
+#         main()
+#     except:
+#         logging.error(traceback.format_exc())
+#
+#     time.sleep(REST_TIME)
